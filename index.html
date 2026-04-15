@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ERNIE Image — Baidu's Open 8B DiT Text-to-Image Model</title>
+<meta name="description" content="ERNIE Image is Baidu's open-weight 8B Diffusion Transformer for text-to-image generation. Long-text rendering, complex instruction following, native bilingual Chinese and English, Apache 2.0, runs on 24 GB consumer GPU. GenEval 0.8856, LongTextBench 0.9733." />
+<link rel="canonical" href="https://ernie-image.github.io/" />
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+<meta name="theme-color" content="#0a0a0a" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="ERNIE Image" />
+<meta property="og:title" content="ERNIE Image — Baidu's Open 8B DiT Text-to-Image Model" />
+<meta property="og:description" content="Open-weight 8B DiT by Baidu. Long-text rendering, complex prompts, Chinese + English, Apache 2.0. GenEval 0.8856, LongTextBench 0.9733." />
+<meta property="og:url" content="https://ernie-image.github.io/" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="ERNIE Image — Baidu's Open 8B DiT Text-to-Image Model" />
+<meta name="twitter:description" content="Open-weight 8B DiT by Baidu. Long-text rendering, complex prompts, Chinese + English, Apache 2.0." />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://ernie-image.github.io/#software",
+      "name": "ERNIE Image",
+      "alternateName": ["ERNIE-Image", "Baidu ERNIE Image", "ERNIE Image Turbo"],
+      "applicationCategory": "MultimediaApplication",
+      "applicationSubCategory": "Text-to-Image Generation",
+      "operatingSystem": "Cross-platform",
+      "description": "ERNIE Image is an open-weight 8B Diffusion Transformer text-to-image generation model developed by the ERNIE-Image Team at Baidu. It specializes in long-form text rendering inside images, complex multi-object instruction following, and native bilingual Chinese and English prompting.",
+      "creator": {
+        "@type": "Organization",
+        "name": "Baidu",
+        "alternateName": "ERNIE-Image Team, Baidu",
+        "url": "https://www.baidu.com"
+      },
+      "datePublished": "2026-04-15",
+      "license": "https://www.apache.org/licenses/LICENSE-2.0",
+      "softwareVersion": "ERNIE Image (SFT) and ERNIE Image Turbo",
+      "url": "https://ernie-image.github.io/",
+      "sameAs": [
+        "https://ernie-image.org",
+        "https://huggingface.co/baidu/ERNIE-Image",
+        "https://huggingface.co/baidu/ERNIE-Image-Turbo",
+        "https://github.com/baidu/ernie-image",
+        "https://yiyan.baidu.com/blog/posts/ernie-image"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://ernie-image.github.io/#website",
+      "url": "https://ernie-image.github.io/",
+      "name": "ERNIE Image — Technical Reference",
+      "description": "Independent technical reference for Baidu's ERNIE Image open-weight text-to-image model.",
+      "inLanguage": "en",
+      "publisher": {
+        "@type": "Organization",
+        "name": "ernie-image.github.io"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://ernie-image.github.io/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Who built the ERNIE Image model?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "ERNIE Image is developed by the ERNIE-Image Team at Baidu and released on 2026-04-15 under the Apache 2.0 license. Open weights are distributed on Hugging Face at baidu/ERNIE-Image and baidu/ERNIE-Image-Turbo, with reference code at github.com/baidu/ernie-image."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between ERNIE Image and ERNIE Image Turbo?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Both share the same 8B single-stream Diffusion Transformer backbone. ERNIE Image (SFT) samples in about 50 steps at guidance 4.0 and gives a slightly higher Overall score on GenEval. ERNIE Image Turbo is distilled with DMD and reinforcement learning to 8 steps at guidance 1.0 — roughly 6x faster."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How good is ERNIE Image at rendering long text inside images?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "On LongTextBench, ERNIE Image with Prompt Enhancer averages 0.9733 across English and Chinese subsets, and the Turbo variant averages 0.9655. Multi-line marketing copy, comic dialogue, and labeled infographics stay legible in a single generation."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does ERNIE Image handle Chinese prompts as well as English?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. On OneIG-Bench with Prompt Enhancer, ERNIE Image scores 0.5750 on the English track and 0.5543 on the Chinese track — a small gap compared to most open models. Prompts can be written in English, Chinese, or mixed, and ERNIE Image routes them through the same encoder path."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can ERNIE Image run on a consumer GPU?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The ERNIE Image public model card states the 8B DiT runs on a single 24 GB consumer GPU. Community reports on Baidu AI Studio also discuss 16 GB local setups, though those should be validated against the reference implementation before relying on them."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What image resolutions does ERNIE Image support?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The ERNIE Image model card documents 1024x1024, 848x1264, 1264x848, 768x1376, 1376x768, 896x1200, and 1200x896 — enough for posters, storyboard panels, UI mockups, and widescreen scenes without cropping."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0a0a0a;
+    --fg: #f5f5f5;
+    --muted: #a3a3a3;
+    --dim: #737373;
+    --line: rgba(255,255,255,0.08);
+    --line-strong: rgba(255,255,255,0.15);
+    --card: rgba(255,255,255,0.02);
+    --card-hover: rgba(255,255,255,0.04);
+    --sky: #7dd3fc;
+    --sky-dim: #38bdf8;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: inherit; }
+  code { font-family: var(--mono); font-size: 0.9em; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--sky); }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+  .narrow { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    padding: 96px 0 80px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top, rgba(56,189,248,0.16), transparent 60%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; left: 0; right: 0; top: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(56,189,248,0.3), transparent);
+  }
+  .hero-inner { position: relative; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.03);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--sky);
+    backdrop-filter: blur(8px);
+    margin-bottom: 28px;
+  }
+  .badge-dot {
+    width: 6px; height: 6px; border-radius: 999px;
+    background: #4ade80;
+    box-shadow: 0 0 8px rgba(74,222,128,0.6);
+  }
+  h1 {
+    font-size: clamp(48px, 8vw, 88px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    margin: 0 0 28px;
+    color: #fff;
+  }
+  .lede {
+    max-width: 640px;
+    margin: 0 auto;
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin: 36px auto 0;
+    max-width: 600px;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.03);
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    color: #d4d4d4;
+  }
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 40px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    padding: 0 32px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s, transform 0.15s;
+  }
+  .btn-primary {
+    background: #fff;
+    color: #0a0a0a;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
+  }
+  .btn-primary:hover { background: #e5e5e5; }
+  .btn-secondary {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--line-strong);
+    color: #fafafa;
+    backdrop-filter: blur(8px);
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.08); }
+  .release-line {
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--dim);
+  }
+
+  /* Section frame */
+  section.block {
+    border-top: 1px solid var(--line);
+    padding: 80px 0;
+  }
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sky);
+    text-align: center;
+  }
+  h2 {
+    margin: 12px 0 0;
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-align: center;
+    color: #fff;
+  }
+  .section-intro {
+    max-width: 640px;
+    margin: 16px auto 0;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* Stat grid */
+  .stats {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 56px;
+  }
+  @media (min-width: 720px) {
+    .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  .stat {
+    padding: 20px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    border-radius: 16px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .stat:hover { background: var(--card-hover); border-color: var(--line-strong); }
+  .stat-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .stat-value {
+    margin-top: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .stat-sub {
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--dim);
+  }
+
+  /* Card grid */
+  .cards {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: 1fr;
+    margin-top: 56px;
+  }
+  @media (min-width: 860px) {
+    .cards { grid-template-columns: 1fr 1fr; }
+  }
+  .card {
+    padding: 32px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    border-radius: 16px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .card:hover { background: var(--card-hover); border-color: var(--line-strong); }
+  .card h3 {
+    margin: 0 0 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .card-eyebrow {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sky);
+    margin-bottom: 12px;
+  }
+  .card p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+  .spec-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0;
+  }
+  .spec-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px;
+  }
+  .spec-list li:last-child { border-bottom: 0; }
+  .spec-k { color: var(--dim); }
+  .spec-v { font-family: var(--mono); font-size: 12px; color: var(--sky); }
+
+  /* Benchmark tables */
+  .bench-grid {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: 1fr;
+    margin-top: 56px;
+  }
+  @media (min-width: 860px) {
+    .bench-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .bench {
+    border: 1px solid var(--line);
+    background: var(--card);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .bench-head {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .bench-head h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .bench-head p {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--dim);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead tr {
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--line);
+  }
+  th {
+    padding: 12px 24px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  th.num, td.num { text-align: right; }
+  tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
+  tbody tr:last-child { border-bottom: 0; }
+  td { padding: 12px 24px; }
+  td.num { font-family: var(--mono); color: var(--sky); font-size: 12px; }
+  tr.ours td:first-child { font-weight: 600; color: #fff; }
+  tr:not(.ours) td:first-child { color: var(--muted); }
+
+  /* FAQ */
+  .faq {
+    margin-top: 48px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  details {
+    border-bottom: 1px solid var(--line);
+  }
+  details:last-child { border-bottom: 0; }
+  summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 20px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #fafafa;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: "+";
+    color: var(--dim);
+    font-size: 18px;
+    transition: transform 0.15s;
+  }
+  details[open] summary::after { transform: rotate(45deg); }
+  details p {
+    margin: 0;
+    padding: 0 24px 20px;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* CTA strip */
+  .cta-strip {
+    margin-top: 56px;
+    padding: 48px 32px;
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(56,189,248,0.08), rgba(56,189,248,0.02));
+    border-radius: 20px;
+    text-align: center;
+  }
+  .cta-strip h2 {
+    margin: 0 0 12px;
+    font-size: 28px;
+  }
+  .cta-strip p {
+    margin: 0 auto 28px;
+    max-width: 520px;
+    color: var(--muted);
+  }
+
+  /* Sources */
+  .sources {
+    display: grid;
+    gap: 32px;
+    grid-template-columns: 1fr;
+    margin-top: 48px;
+  }
+  @media (min-width: 720px) {
+    .sources { grid-template-columns: 1fr 1fr; }
+  }
+  .source-group h3 {
+    margin: 0 0 16px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .source-group ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .source-group li {
+    padding: 6px 0;
+    font-size: 14px;
+  }
+  .source-group a {
+    color: #e5e5e5;
+    text-decoration: underline;
+    text-decoration-color: rgba(255,255,255,0.2);
+    text-underline-offset: 3px;
+  }
+  .source-group a:hover {
+    text-decoration-color: rgba(255,255,255,0.5);
+  }
+
+  /* About */
+  .about p {
+    margin: 16px 0;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 32px 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--dim);
+  }
+  footer a {
+    color: var(--muted);
+    text-decoration: underline;
+    text-decoration-color: rgba(255,255,255,0.15);
+    text-underline-offset: 3px;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap hero-inner">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      <span>ERNIE-Image Team, Baidu</span>
+    </div>
+    <h1>ERNIE Image</h1>
+    <p class="lede">
+      An open 8B Diffusion Transformer for text-to-image generation.
+      Built for long-form text rendering, complex instruction following,
+      and native Chinese and English prompting.
+    </p>
+    <div class="pills">
+      <span class="pill">8B DiT</span>
+      <span class="pill">50 · 8 steps</span>
+      <span class="pill">24 GB VRAM</span>
+      <span class="pill">Apache 2.0</span>
+      <span class="pill">bilingual</span>
+    </div>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://ernie-image.org">Try ERNIE Image Free</a>
+      <a class="btn btn-secondary" href="#specs">Read the specs</a>
+    </div>
+    <p class="release-line">Released 2026-04-15 · open weights on Hugging Face</p>
+  </div>
+</header>
+
+<section class="block" id="at-a-glance">
+  <div class="wrap">
+    <p class="eyebrow">ERNIE Image at a glance</p>
+    <h2>An open text-to-image model from Baidu</h2>
+    <p class="section-intro">
+      ERNIE Image is an open text-to-image generation model from the
+      ERNIE-Image Team at Baidu, released on 2026-04-15 under the Apache 2.0
+      license. It ships in two variants — a quality-oriented SFT model and a
+      fast 8-step Turbo distillation — and is designed for structured visual
+      content such as posters, comics, and multi-panel layouts.
+    </p>
+    <dl class="stats">
+      <div class="stat"><dt class="stat-label">Developer</dt><dd class="stat-value">Baidu</dd><dd class="stat-sub">ERNIE-Image Team</dd></div>
+      <div class="stat"><dt class="stat-label">Release date</dt><dd class="stat-value">2026-04-15</dd><dd class="stat-sub">Open weights</dd></div>
+      <div class="stat"><dt class="stat-label">License</dt><dd class="stat-value">Apache 2.0</dd><dd class="stat-sub">Commercial use OK</dd></div>
+      <div class="stat"><dt class="stat-label">Hardware</dt><dd class="stat-value">24 GB VRAM</dd><dd class="stat-sub">Consumer GPU</dd></div>
+      <div class="stat"><dt class="stat-label">Architecture</dt><dd class="stat-value">Single-stream DiT</dd><dd class="stat-sub">36 layers, 4096 hidden</dd></div>
+      <div class="stat"><dt class="stat-label">Parameters</dt><dd class="stat-value">8B DiT</dd><dd class="stat-sub">Transformer2D backbone</dd></div>
+      <div class="stat"><dt class="stat-label">Variants</dt><dd class="stat-value">SFT · Turbo</dd><dd class="stat-sub">50 steps · 8 steps</dd></div>
+      <div class="stat"><dt class="stat-label">Languages</dt><dd class="stat-value">EN · 中文</dd><dd class="stat-sub">Native bilingual</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="block" id="specs">
+  <div class="wrap">
+    <p class="eyebrow">How ERNIE Image works</p>
+    <h2>Architecture and inference pipeline</h2>
+    <p class="section-intro">
+      Every figure below is taken from the ERNIE Image public model card and
+      configuration files. Items the model card does not disclose are labeled
+      as such.
+    </p>
+    <div class="cards">
+      <div class="card">
+        <h3>Diffusion backbone — ErnieImageTransformer2DModel</h3>
+        <p>
+          The ERNIE Image denoiser is a single-stream Diffusion Transformer
+          (DiT). Its public config exposes 36 layers, a hidden dimension of
+          4096, an FFN hidden size of 12288, 32 attention heads, and 128
+          input/output channels. The text conditioning vector is
+          3072-dimensional.
+        </p>
+        <ul class="spec-list">
+          <li><span class="spec-k">Layers</span><span class="spec-v">36</span></li>
+          <li><span class="spec-k">Hidden dim</span><span class="spec-v">4096</span></li>
+          <li><span class="spec-k">FFN hidden</span><span class="spec-v">12288</span></li>
+          <li><span class="spec-k">Attention heads</span><span class="spec-v">32</span></li>
+          <li><span class="spec-k">I/O channels</span><span class="spec-v">128</span></li>
+          <li><span class="spec-k">text_in_dim</span><span class="spec-v">3072</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Prompt Enhancer — Ministral3ForCausalLM</h3>
+        <p>
+          ERNIE Image ships with a dedicated Prompt Enhancer component. It
+          accepts a short user description plus a target resolution and
+          rewrites them into a richer, structured visual description. Its chat
+          template constrains it to output only the enhanced text, and the
+          pipeline can return the revised prompt for audit and reproducibility.
+        </p>
+        <ul class="spec-list">
+          <li><span class="spec-k">Architecture</span><span class="spec-v">Ministral3ForCausalLM</span></li>
+          <li><span class="spec-k">Hidden dim</span><span class="spec-v">3072</span></li>
+          <li><span class="spec-k">Layers</span><span class="spec-v">26</span></li>
+          <li><span class="spec-k">Vocab</span><span class="spec-v">131 072</span></li>
+          <li><span class="spec-k">Position encoding</span><span class="spec-v">YaRN RoPE</span></li>
+          <li><span class="spec-k">Toggle</span><span class="spec-v">use_pe</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Text encoder — Mistral3Model with Pixtral vision config</h3>
+        <p>
+          The ERNIE Image <code>text_encoder</code> config is not a traditional
+          CLIP text tower. It is a <code>Mistral3Model</code> containing both a
+          <code>text_config</code> and a <code>vision_config</code>, where the
+          vision half declares <code>model_type=pixtral</code>, patch size 14,
+          24 layers, and hidden dim 1024, with an <code>image_token_index</code>
+          field present — hinting at latent multimodal capability at the config
+          level, though the public model card focuses on text-to-image use.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Inference flow</h3>
+        <p>
+          User prompt → optional Prompt Enhancer when <code>use_pe=True</code>
+          → tokenizer and text / multimodal encoder produce 3072-dim
+          conditioning vectors → DiT denoiser samples a latent (~50 steps for
+          SFT, 8 steps for Turbo, DMD + RL distilled) → VAE decoder maps the
+          latent back to pixels. The pipeline optionally returns
+          <code>revised_prompts</code> for audit logs.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="features">
+  <div class="wrap">
+    <p class="eyebrow">What ERNIE Image is good at</p>
+    <h2>Capabilities taken from the model card</h2>
+    <div class="cards">
+      <div class="card">
+        <span class="card-eyebrow">LongTextBench 0.9733</span>
+        <h3>Long-form text rendering</h3>
+        <p>
+          On LongTextBench, ERNIE Image (with Prompt Enhancer) averages 0.9733
+          across EN and ZH subsets. Multi-line marketing copy, comic dialogue,
+          and labeled infographics stay legible in a single generation — this
+          is the defining strength of the ERNIE Image model versus same-size
+          peers.
+        </p>
+      </div>
+      <div class="card">
+        <span class="card-eyebrow">GenEval 0.8856</span>
+        <h3>Complex instruction following</h3>
+        <p>
+          ERNIE Image reaches 0.8856 Overall on GenEval without Prompt
+          Enhancer, leading several contemporary open-weight baselines in the
+          published table. It handles prompts with multiple objects, spatial
+          relations, counts, colors, and attribute bindings more reliably than
+          models of comparable size.
+        </p>
+      </div>
+      <div class="card">
+        <span class="card-eyebrow">OneIG EN 0.5750 · ZH 0.5543</span>
+        <h3>Native Chinese and English</h3>
+        <p>
+          On OneIG-Bench the Chinese and English tracks are close enough to
+          treat as one pipeline. Prompts can be written in English, Chinese, or
+          mixed, and ERNIE Image routes them through the same encoder path.
+        </p>
+      </div>
+      <div class="card">
+        <span class="card-eyebrow">Structured layouts</span>
+        <h3>Posters, comics, multi-panel</h3>
+        <p>
+          The ERNIE Image model card explicitly positions the model for
+          posters, comics, storyboards, and multi-panel compositions — outputs
+          where text rendering and composition matter at the same time. The
+          architecture is tuned for that class of images rather than
+          single-subject portraits alone.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="benchmarks">
+  <div class="wrap">
+    <p class="eyebrow">Benchmarks</p>
+    <h2>Numbers from the ERNIE Image model card</h2>
+    <p class="section-intro">
+      All scores below are copied verbatim from the ERNIE Image Hugging Face
+      model card (evaluated 2026-04-15). Scores are in the 0–1 range; higher
+      is better. Benchmarks drift over time — treat these as a snapshot.
+    </p>
+    <div class="bench-grid">
+      <div class="bench">
+        <div class="bench-head">
+          <h3>GenEval — top 3</h3>
+          <p>Compositional T2I — object count, position, color, attribute binding</p>
+        </div>
+        <table>
+          <thead><tr><th>Model</th><th class="num">Overall</th></tr></thead>
+          <tbody>
+            <tr class="ours"><td>ERNIE Image (w/o PE)</td><td class="num">0.8856</td></tr>
+            <tr class="ours"><td>ERNIE Image (w/ PE)</td><td class="num">0.8728</td></tr>
+            <tr><td>Qwen-Image</td><td class="num">0.8683</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bench">
+        <div class="bench-head">
+          <h3>OneIG-EN — top 3</h3>
+          <p>English track — alignment, text, reasoning, style, diversity</p>
+        </div>
+        <table>
+          <thead><tr><th>Model</th><th class="num">Overall</th></tr></thead>
+          <tbody>
+            <tr class="ours"><td>ERNIE Image (w/ PE)</td><td class="num">0.5750</td></tr>
+            <tr class="ours"><td>ERNIE Image Turbo (w/ PE)</td><td class="num">0.5656</td></tr>
+            <tr class="ours"><td>ERNIE Image (w/o PE)</td><td class="num">0.5537</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bench">
+        <div class="bench-head">
+          <h3>OneIG-ZH — top 3</h3>
+          <p>Chinese track — same five dimensions as OneIG-EN</p>
+        </div>
+        <table>
+          <thead><tr><th>Model</th><th class="num">Overall</th></tr></thead>
+          <tbody>
+            <tr class="ours"><td>ERNIE Image (w/ PE)</td><td class="num">0.5543</td></tr>
+            <tr class="ours"><td>ERNIE Image Turbo (w/ PE)</td><td class="num">0.5435</td></tr>
+            <tr class="ours"><td>ERNIE Image (w/o PE)</td><td class="num">0.5208</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bench">
+        <div class="bench-head">
+          <h3>LongTextBench — top 3</h3>
+          <p>Long-form text rendering inside generated images</p>
+        </div>
+        <table>
+          <thead><tr><th>Model</th><th class="num">EN</th><th class="num">ZH</th><th class="num">Avg</th></tr></thead>
+          <tbody>
+            <tr class="ours"><td>ERNIE Image (w/ PE)</td><td class="num">0.9804</td><td class="num">0.9661</td><td class="num">0.9733</td></tr>
+            <tr class="ours"><td>ERNIE Image Turbo (w/ PE)</td><td class="num">0.9675</td><td class="num">0.9636</td><td class="num">0.9655</td></tr>
+            <tr class="ours"><td>ERNIE Image Turbo (w/o PE)</td><td class="num">0.9602</td><td class="num">0.9675</td><td class="num">0.9639</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="limitations">
+  <div class="wrap">
+    <p class="eyebrow">Honest limitations</p>
+    <h2>What the ERNIE Image model does not do</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Prompt Enhancer is a tradeoff, not free quality</h3>
+        <p>
+          Turning <code>use_pe</code> on raises ERNIE Image Counting from
+          0.7781 to 0.8187 on GenEval, but lowers the Overall score from
+          0.8856 to 0.8728. The enhancer shifts the model toward richer, more
+          structured descriptions at the cost of some attribute-binding
+          precision. Treat it as a per-scene switch rather than always-on.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Training data is not publicly disclosed</h3>
+        <p>
+          The ERNIE Image public model card does not disclose training dataset
+          sources, licensing terms, scale, language mix, or synthetic-data
+          fraction. Downstream users who need these details for compliance
+          should treat them as unknown and design their own filtering and
+          auditing layer.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Benchmark drift is real</h3>
+        <p>
+          GenEval 2 research flags that popular text-to-image benchmarks drift
+          as models saturate and evaluators age. ERNIE Image scores here
+          reflect the scripts and evaluator versions used on 2026-04-15. A
+          re-run on a newer evaluator is likely to produce different absolute
+          numbers even without model changes.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Understanding tasks are out of scope</h3>
+        <p>
+          The ERNIE Image model card focuses on text-to-image generation. It
+          does not claim image captioning, visual question answering, or
+          document understanding. Pipelines that need those capabilities
+          should compose ERNIE Image with a separate vision-language model.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="faq">
+  <div class="narrow">
+    <h2>ERNIE Image — frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Who built the ERNIE Image model?</summary>
+        <p>
+          ERNIE Image is developed by the ERNIE-Image Team at Baidu and
+          released on 2026-04-15 under the Apache 2.0 license. Open weights
+          are distributed on Hugging Face at baidu/ERNIE-Image and
+          baidu/ERNIE-Image-Turbo, with reference code at
+          github.com/baidu/ernie-image.
+        </p>
+      </details>
+      <details>
+        <summary>What is the difference between ERNIE Image and ERNIE Image Turbo?</summary>
+        <p>
+          Both share the same 8B single-stream Diffusion Transformer backbone.
+          The SFT ERNIE Image model samples in ~50 steps at guidance 4.0 and
+          gives slightly higher Overall on GenEval. ERNIE Image Turbo is
+          distilled with DMD and reinforcement learning to 8 steps at guidance
+          1.0 — roughly 6x faster — and is what the free generator on the
+          ERNIE Image platform runs.
+        </p>
+      </details>
+      <details>
+        <summary>How good is ERNIE Image at rendering long text inside images?</summary>
+        <p>
+          On LongTextBench, ERNIE Image (with Prompt Enhancer) averages 0.9733
+          across EN and ZH subsets, and the Turbo variant averages 0.9655.
+          Multi-line marketing copy, comic dialogue, and labeled infographics
+          stay legible — the defining capability of ERNIE Image relative to
+          same-size peers.
+        </p>
+      </details>
+      <details>
+        <summary>Does ERNIE Image handle Chinese prompts as well as English?</summary>
+        <p>
+          Yes. On OneIG-Bench with Prompt Enhancer, ERNIE Image scores 0.5750
+          on the English track and 0.5543 on the Chinese track — a small gap
+          compared to most open models. Prompts can be written in English,
+          Chinese, or mixed, and ERNIE Image routes them through the same
+          encoder path.
+        </p>
+      </details>
+      <details>
+        <summary>When should I turn the Prompt Enhancer off?</summary>
+        <p>
+          The Prompt Enhancer trades off dimensions: enabling it raises
+          GenEval Counting from 0.7781 to 0.8187 on ERNIE Image but lowers the
+          Overall score from 0.8856 to 0.8728. Turn it on for detail-rich or
+          structured scenes where richer descriptions help, and off for strict
+          attribute-binding prompts where precision matters more than
+          elaboration.
+        </p>
+      </details>
+      <details>
+        <summary>What image resolutions does ERNIE Image support?</summary>
+        <p>
+          The ERNIE Image model card documents 1024×1024, 848×1264, 1264×848,
+          768×1376, 1376×768, 896×1200, and 1200×896 — enough for posters,
+          storyboard panels, UI mockups, and widescreen scenes without
+          cropping.
+        </p>
+      </details>
+      <details>
+        <summary>Can ERNIE Image run on a consumer GPU?</summary>
+        <p>
+          Yes. The ERNIE Image public model card states the 8B DiT runs on a
+          single 24 GB consumer GPU. Community reports on Baidu AI Studio also
+          discuss 16 GB local setups, though those should be validated against
+          the reference implementation before relying on them.
+        </p>
+      </details>
+      <details>
+        <summary>What is not publicly disclosed about ERNIE Image?</summary>
+        <p>
+          The model card does not disclose training dataset sources, licensing
+          provenance, dataset scale, synthetic-data fraction, alignment reward
+          models, or red-team results. Deployments with compliance
+          requirements should treat these as open questions rather than
+          infer them.
+        </p>
+      </details>
+    </div>
+
+    <div class="cta-strip">
+      <h2>Try ERNIE Image free — no install</h2>
+      <p>
+        The free in-browser demo embeds the baidu/ERNIE-Image-Turbo Hugging
+        Face Space. Type a prompt in English or Chinese, no account required.
+      </p>
+      <a class="btn btn-primary" href="https://ernie-image.org">Open ernie-image.org</a>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="sources">
+  <div class="narrow">
+    <h2>Sources and references</h2>
+    <p class="section-intro">
+      Every factual claim on this page is grounded in the following
+      first-party and peer-reviewed sources.
+    </p>
+    <div class="sources">
+      <div class="source-group">
+        <h3>Baidu / Hugging Face</h3>
+        <ul>
+          <li><a href="https://huggingface.co/baidu/ERNIE-Image" rel="nofollow noopener" target="_blank">ERNIE Image model card (Hugging Face)</a></li>
+          <li><a href="https://huggingface.co/baidu/ERNIE-Image-Turbo" rel="nofollow noopener" target="_blank">ERNIE Image Turbo model card (Hugging Face)</a></li>
+          <li><a href="https://huggingface.co/spaces/baidu/ERNIE-Image-Turbo" rel="nofollow noopener" target="_blank">ERNIE Image Turbo Space (live demo)</a></li>
+          <li><a href="https://github.com/baidu/ernie-image" rel="nofollow noopener" target="_blank">Baidu ERNIE Image GitHub repository</a></li>
+          <li><a href="https://yiyan.baidu.com/blog/posts/ernie-image" rel="nofollow noopener" target="_blank">Introducing ERNIE Image (Baidu blog)</a></li>
+        </ul>
+      </div>
+      <div class="source-group">
+        <h3>Benchmarks and methodology</h3>
+        <ul>
+          <li><a href="https://arxiv.org/abs/2310.11513" rel="nofollow noopener" target="_blank">GenEval — compositional T2I evaluation</a></li>
+          <li><a href="https://arxiv.org/abs/2506.07977" rel="nofollow noopener" target="_blank">OneIG-Bench — multi-dimensional T2I evaluation</a></li>
+          <li><a href="https://arxiv.org/abs/2212.09748" rel="nofollow noopener" target="_blank">Scalable Diffusion Models with Transformers (DiT)</a></li>
+          <li><a href="https://arxiv.org/abs/2311.18828" rel="nofollow noopener" target="_blank">Distribution Matching Distillation (DMD)</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block about">
+  <div class="narrow">
+    <h2 style="font-size:24px">About this page</h2>
+    <p>
+      This page is an independent technical reference for the ERNIE Image
+      model released by the ERNIE-Image Team at Baidu on 2026-04-15. It is
+      not operated by Baidu. Every technical figure, benchmark number, and
+      architectural claim on this page is sourced from the ERNIE Image
+      Hugging Face model card, the ERNIE Image GitHub repository, and the
+      linked peer-reviewed benchmark papers.
+    </p>
+    <p>
+      Where the ERNIE Image model card does not disclose a figure — training
+      data, alignment details, safety evaluation — this page labels it as
+      such rather than inferring it. Benchmark numbers are snapshots from
+      2026-04-15 and will drift as evaluator versions evolve.
+    </p>
+    <p style="font-size:12px;color:var(--dim)">
+      Content last updated: 2026-04-15.
+    </p>
+  </div>
+</section>
+
+<footer>
+  © 2026 ERNIE Image — independent reference for the Baidu ERNIE Image model.
+  ERNIE Image is released by Baidu under the Apache 2.0 license.
+  Live demo at <a href="https://ernie-image.org">ernie-image.org</a>.
+</footer>
+
+</body>
+</html>
